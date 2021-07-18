@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
@@ -11,34 +12,46 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class CompanyController : Controller
     {
-        [HttpGet]
-        public IActionResult Index()
+
+        private CompanyService _service;
+
+        public CompanyController()
         {
-            return Json("Index");
+            _service = new CompanyService();
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Show(int id)
+        [HttpGet]
+        public List<Company> Index()
         {
-            return Json("Show");
+            return _service.GetCompanies();
+        }
+
+        [HttpGet("{name}")]
+        public Company Show(string name)
+        {
+            return _service.GetCompany(name);
         }
 
         [HttpPost]
-        public IActionResult Create()
+        public List<Company> Create([FromQuery] string name, [FromQuery] string hqAddress)
         {
-            return Json("Create");
+            _service.CreateCompany(name, hqAddress);
+            return _service.GetCompanies();
         }
 
         [HttpPut]
-        public IActionResult Update(int id)
+        public Company Update([FromQuery] string name, [FromQuery] string newAddress)
         {
-            return View();
+            _service.UpdateCompany(name, newAddress);
+            return _service.GetCompany(name);
+            
         }
 
-        [HttpDelete]
-        public IActionResult Delete(int id)
+        [HttpDelete("{name}")]
+        public List<Company> Delete(string name)
         {
-            return View();
+            _service.DeleteCompany(name);
+            return _service.GetCompanies();
         }
     }
 }
